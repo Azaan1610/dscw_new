@@ -1,4 +1,5 @@
 package com.example.grpc.client.grpcclient;
+import com.example.grpc.client.grpcclient.uploadController;
 
 import com.example.grpc.server.grpcserver.PingRequest;
 import com.example.grpc.server.grpcserver.PongResponse;
@@ -23,7 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class GRPCClientService {
 	
 	//the matrix file saved on my local host (refers to my git repo)
-	String MatrixFilePath = "/home/azaanzafar1610/dscw_new/";
+	String MatrixFilePath = "/home/azaanzafar1610/dscw_new";
 
 	//lab 2 stuff
     public String ping() {

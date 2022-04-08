@@ -1,26 +1,23 @@
 package com.example.grpc.client.grpcclient;
 
-public class uploadController {
-   private String nameOfFile;
-   private String typeOfContent;
-   private String displayMessage;
+public class uploadController{
+    private String matrixFileName ;
+    private String matrixContentType;
+    private String displayMessage;
 
-    public uploadController(String nameOfFile, String typeOfContent, String displayMessage){
-        this.nameOfFile = nameOfFile;
-        this.typeOfContent = typeOfContent;
-        this.displayMessage = displayMessage;
+    public uploadController(String m_fileName, String m_contentType, String m_displayMessage){
+        this.matrixFileName = m_fileName;
+        this.matrixContentType = m_contentType;
+        this.displayMessage = m_displayMessage;
     }
 
-    public String fetchFileName(){
-        return this.nameOfFile;
+    public String getFileName(){
+        return this.matrixFileName;
     }
-
     public String getContentType(){
-        return this.typeOfContent;
+        return this.matrixContentType;
     }
-
-    public String fetchMessage(){
+    public String getMessage(){
         return this.displayMessage;
     }
-
 }
