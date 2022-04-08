@@ -97,12 +97,14 @@ public class GRPCClientService {
 			return new uploadController(nameOfFile, fileContentType, checkSize);
 		}
 
-		//given we know that the matrix is a square matrix from the checks above, lets verify if they are square
+		//given we know that the matrix is a square matrix from the checks above, lets verify if they are power of 2
 		String checkPower = powerCheck(matrixA, matrixB);
 		if (checkPower != "power of 2 :)"){
 			return new uploadController(nameOfFile, fileContentType, checkPower);
 		}
-		return new uploadController(nameOfFile, fileContentType, "File Successfully Uploaded");
+
+		//if all checks are successful then upload the file 
+		return new uploadController(nameOfFile, fileContentType, "All checks passed, File Uploaded");
 		
 
 
@@ -119,7 +121,7 @@ public class GRPCClientService {
 
 		//here we compare to see if both matrices have same length of row and column by splitting eg matrixB[0] gets us the column in the first row
 		if(matrixA_row1!=matrixB_row1 || matrixA_col1!=matrixB_col1){
-				reply = "Matrices are not square!";
+				reply = "Error: Both matrices have to be SQUARE and equal in dimension!";
 		}
 		else{
 				reply = "Equal Size :)";
@@ -129,18 +131,21 @@ public class GRPCClientService {
 
 	public static String powerCheck(int[][]matrixA, int[][]matrixB){
 		int matrixA_row1 = matrixA.length;
-		int matrixA_col1 = matrixA[0].length;
 		String reply;
 		int matrixB_row1 = matrixB.length;
-		int matrixB_col1 = matrixB[0].length;
 
-		if (matrixA_row1 % 4 !=0 || matrixB_row1 % 4 !=0){ //if matrix length % 4 == 0 it means matrix is power of 2
-			reply = "Not power of 2";
-		}
-		else{
+
+		//here we are checking if the rows of each matrix return an EVEN number for log base of 2
+		double matrixA_powerCheck = (Math.log(matrixA_row1)/Math.log(2));
+        double matrixB_powerCheck = (Math.log(matrixB_row1)/Math.log(2));
+
+		//if it returns an even number then we know that the matrix is a power of 2
+		if (matrixA_powerCheck%2 ==0 && matrixB_powerCheck%2==0){ //checking if returned value is even or not
 			reply = "power of 2 :)";
 		}
-
+		else{
+			reply = "Not power of 2";
+		}
 		return reply;
 
 	}
