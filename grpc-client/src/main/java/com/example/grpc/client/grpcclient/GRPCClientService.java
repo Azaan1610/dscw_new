@@ -10,6 +10,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import com.example.grpc.server.grpcserver.MatrixReply;
 import com.example.grpc.server.grpcserver.MatrixServiceGrpc;
@@ -149,6 +150,91 @@ public class GRPCClientService {
 		return reply;
 
 	}
+
+	public void matrixCalc(int[][]matrixA, int[][]matrixB, int deadline){//use deadline when doing that part
+
+		
+		ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9090).usePlaintext().build();
+		MatrixServiceGrpc.MatrixServiceBlockingStub stub = MatrixServiceGrpc.newBlockingStub(channel);
+		
+		//these are the 8 different servers with their respective stubs
+		ManagedChannel channel1 = ManagedChannelBuilder.forAddress("", 9090).usePlaintext().build();
+		MatrixServiceGrpc.MatrixServiceBlockingStub stub1 = MatrixServiceGrpc.newBlockingStub(channel1);
+		
+		ManagedChannel channel2 = ManagedChannelBuilder.forAddress("", 9090).usePlaintext().build();
+		MatrixServiceGrpc.MatrixServiceBlockingStub stub2 = MatrixServiceGrpc.newBlockingStub(channel2);
+		
+		ManagedChannel channel3 = ManagedChannelBuilder.forAddress("", 9090).usePlaintext().build();
+		MatrixServiceGrpc.MatrixServiceBlockingStub stub3 = MatrixServiceGrpc.newBlockingStub(channel3);
+		
+		ManagedChannel channel4 = ManagedChannelBuilder.forAddress("", 9090).usePlaintext().build();
+		MatrixServiceGrpc.MatrixServiceBlockingStub stub4 = MatrixServiceGrpc.newBlockingStub(channel4);
+		
+		ManagedChannel channel5 = ManagedChannelBuilder.forAddress("", 9090).usePlaintext().build();
+		MatrixServiceGrpc.MatrixServiceBlockingStub stub5 = MatrixServiceGrpc.newBlockingStub(channel5);
+		
+		ManagedChannel channel6 = ManagedChannelBuilder.forAddress("", 9090).usePlaintext().build();
+		MatrixServiceGrpc.MatrixServiceBlockingStub stub6 = MatrixServiceGrpc.newBlockingStub(channel6);
+		
+		ManagedChannel channel7 = ManagedChannelBuilder.forAddress("", 9090).usePlaintext().build();
+		MatrixServiceGrpc.MatrixServiceBlockingStub stub7 = MatrixServiceGrpc.newBlockingStub(channel7);
+		
+		ManagedChannel channel8 = ManagedChannelBuilder.forAddress("", 9090).usePlaintext().build();
+		MatrixServiceGrpc.MatrixServiceBlockingStub stub8 = MatrixServiceGrpc.newBlockingStub(channel8);
+
+		int maxVal = matrixA.length; //just get matrixA row length. do not need to get matrixB length as we already know that both sizes are same.
+		int matrixC[][] = new int[maxVal][maxVal];
+
+		//here we add all the stubs for each channel in an array so we can keep track of them 
+		ArrayList<MatrixServiceGrpc.MatrixServiceBlockingStub> stubArray = new ArrayList<MatrixServiceGrpc.MatrixServiceBlockingStub>();
+                stubArray.add(stub1);
+                stubArray.add(stub2);
+                stubArray.add(stub3);
+                stubArray.add(stub4);
+                stubArray.add(stub5);
+                stubArray.add(stub6);
+                stubArray.add(stub7);
+                stubArray.add(stub8);
+
+
+		int requiredServers = 8; 
+		int stubs = 0;
+		for (int i = 0; i < maxVal; i++) { // row
+			for (int j = 0; j < maxVal; j++) { // col
+				for (int k = 0; k < maxVal; k++) {
+					
+					MatrixReply temp=stubArray.get(stubs).multiplyBlock(MatrixRequest.newBuilder().setA(matrixA[i][k]).setB(matrixB[k][j]).build());
+					if(stubs == requiredServers-1) stubs = 0;
+					else stubs++;
+					MatrixReply temp2=stubArray.get(stubs).addBlock(MatrixRequest.newBuilder().setA(matrixC[i][j]).setB(temp.getC()).build());
+					matrixC[i][j] = temp2.getC();
+					if(stubs == requiredServers-1) stubs = 0;
+					else stubs++;
+				}
+			}
+		}
+
+		 // Print result matrix
+		 for (int i = 0; i < matrixA.length; i++) {
+			for (int j = 0; j < matrixA[0].length; j++) {
+				System.out.print(matrixC[i][j] + " ");
+			}
+			System.out.println("");
+		}
+		// Close channels
+		channel1.shutdown();
+		channel2.shutdown();
+		channel3.shutdown();
+		channel4.shutdown();
+		channel5.shutdown();
+		channel6.shutdown();
+		channel7.shutdown();
+		channel8.shutdown();
+			
+
+
+
+	} 
 
 
 
