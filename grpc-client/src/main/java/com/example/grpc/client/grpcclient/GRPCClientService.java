@@ -158,28 +158,28 @@ public class GRPCClientService {
 		MatrixServiceGrpc.MatrixServiceBlockingStub stub = MatrixServiceGrpc.newBlockingStub(channel);
 		
 		//these are the 8 different servers with their respective stubs
-		ManagedChannel channel1 = ManagedChannelBuilder.forAddress("", 9090).usePlaintext().build();
+		ManagedChannel channel1 = ManagedChannelBuilder.forAddress("34.134.1.234", 9090).usePlaintext().build();
 		MatrixServiceGrpc.MatrixServiceBlockingStub stub1 = MatrixServiceGrpc.newBlockingStub(channel1);
 		
-		ManagedChannel channel2 = ManagedChannelBuilder.forAddress("", 9090).usePlaintext().build();
+		ManagedChannel channel2 = ManagedChannelBuilder.forAddress("34.72.254.205", 9090).usePlaintext().build();
 		MatrixServiceGrpc.MatrixServiceBlockingStub stub2 = MatrixServiceGrpc.newBlockingStub(channel2);
 		
-		ManagedChannel channel3 = ManagedChannelBuilder.forAddress("", 9090).usePlaintext().build();
+		ManagedChannel channel3 = ManagedChannelBuilder.forAddress("34.70.178.178", 9090).usePlaintext().build();
 		MatrixServiceGrpc.MatrixServiceBlockingStub stub3 = MatrixServiceGrpc.newBlockingStub(channel3);
 		
-		ManagedChannel channel4 = ManagedChannelBuilder.forAddress("", 9090).usePlaintext().build();
+		ManagedChannel channel4 = ManagedChannelBuilder.forAddress("35.202.223.3", 9090).usePlaintext().build();
 		MatrixServiceGrpc.MatrixServiceBlockingStub stub4 = MatrixServiceGrpc.newBlockingStub(channel4);
 		
-		ManagedChannel channel5 = ManagedChannelBuilder.forAddress("", 9090).usePlaintext().build();
+		ManagedChannel channel5 = ManagedChannelBuilder.forAddress("34.139.13.15", 9090).usePlaintext().build();
 		MatrixServiceGrpc.MatrixServiceBlockingStub stub5 = MatrixServiceGrpc.newBlockingStub(channel5);
 		
-		ManagedChannel channel6 = ManagedChannelBuilder.forAddress("", 9090).usePlaintext().build();
+		ManagedChannel channel6 = ManagedChannelBuilder.forAddress("34.148.185.11", 9090).usePlaintext().build();
 		MatrixServiceGrpc.MatrixServiceBlockingStub stub6 = MatrixServiceGrpc.newBlockingStub(channel6);
 		
-		ManagedChannel channel7 = ManagedChannelBuilder.forAddress("", 9090).usePlaintext().build();
+		ManagedChannel channel7 = ManagedChannelBuilder.forAddress("34.75.187.63", 9090).usePlaintext().build();
 		MatrixServiceGrpc.MatrixServiceBlockingStub stub7 = MatrixServiceGrpc.newBlockingStub(channel7);
 		
-		ManagedChannel channel8 = ManagedChannelBuilder.forAddress("", 9090).usePlaintext().build();
+		ManagedChannel channel8 = ManagedChannelBuilder.forAddress("34.139.159.196", 9090).usePlaintext().build();
 		MatrixServiceGrpc.MatrixServiceBlockingStub stub8 = MatrixServiceGrpc.newBlockingStub(channel8);
 
 		int maxVal = matrixA.length; //just get matrixA row length. do not need to get matrixB length as we already know that both sizes are same.
