@@ -11,6 +11,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import javax.swing.plaf.synth.SynthStyle;
+
 import java.util.*;
 import com.example.grpc.server.grpcserver.MatrixReply;
 import com.example.grpc.server.grpcserver.MatrixServiceGrpc;
@@ -198,7 +201,7 @@ public class GRPCClientService {
 				for(int k=0;k<MAX;k++){
 					
 					
-					if(count == 1)){//server 1
+					if(count == 1){//server 1
 						MatrixReply matrix_mult = stub1.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
 						MatrixReply matrix_add = stub1.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(matrix_mult.getC()).build());
 						C[i][j]= MatrixReply.getC();
@@ -259,6 +262,8 @@ public class GRPCClientService {
 			}
 			System.out.println("");
 		}
+
+		System.out.println(count);
 
 		
 
