@@ -180,10 +180,11 @@ public class GRPCClientService {
 		MatrixServiceGrpc.MatrixServiceBlockingStub stub8 = MatrixServiceGrpc.newBlockingStub(channel8);
 	
 	
-	
+		int A[][] = matrixA;
+		int B[][] = matrixB;
 		//deadline footprinting 
 		long startTime = System.nanoTime();
-		MatrixReply deadline_footprinting_matrix = stub1.multiplyBlock(MatrixRequest.newBuilder().setA(matrixA).setB(matrixB).build());
+		MatrixReply deadline_footprinting_matrix = stub1.multiplyBlock(MatrixRequest.newBuilder().setA(A).setB(B).build());
 		long endTime = System.nanoTime();
 		long footprint= endTime-startTime;
 
@@ -192,8 +193,7 @@ public class GRPCClientService {
 		int MAX = matrixA.length; //just get matrixA row length. do not need to get matrixB length as we already know that both sizes are same.
 		//here we create a new matrix called matrixC
 		int C[][] = new int[MAX][MAX];
-		int A[][] = matrixA;
-		int B[][] = matrixB;
+		
 /////////////////////////////////////////////////////////
 
 		int totalCalls = 0;
