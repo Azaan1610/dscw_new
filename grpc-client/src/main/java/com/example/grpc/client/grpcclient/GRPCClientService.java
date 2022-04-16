@@ -165,7 +165,7 @@ public class GRPCClientService {
 		ManagedChannel channel2 = ManagedChannelBuilder.forAddress("35.184.57.72", 9090).usePlaintext().build();
 		MatrixServiceGrpc.MatrixServiceBlockingStub stub2 = MatrixServiceGrpc.newBlockingStub(channel2);
 		
-		ManagedChannel channel3 = ManagedChannelBuilder.forAddress("35.202.41.124", 9090).usePlaintext().build();
+		ManagedChannel channel3 = ManagedChannelBuilder.forAddress("34.69.17.47", 9090).usePlaintext().build();
 		MatrixServiceGrpc.MatrixServiceBlockingStub stub3 = MatrixServiceGrpc.newBlockingStub(channel3);
 		
 		ManagedChannel channel4 = ManagedChannelBuilder.forAddress("34.123.234.31", 9090).usePlaintext().build();
@@ -177,10 +177,10 @@ public class GRPCClientService {
 		ManagedChannel channel6 = ManagedChannelBuilder.forAddress("34.73.184.141", 9090).usePlaintext().build();
 		MatrixServiceGrpc.MatrixServiceBlockingStub stub6 = MatrixServiceGrpc.newBlockingStub(channel6);
 		
-		ManagedChannel channel7 = ManagedChannelBuilder.forAddress("34.138.47.44", 9090).usePlaintext().build();
+		ManagedChannel channel7 = ManagedChannelBuilder.forAddress("35.227.118.129", 9090).usePlaintext().build();
 		MatrixServiceGrpc.MatrixServiceBlockingStub stub7 = MatrixServiceGrpc.newBlockingStub(channel7);
 		
-		ManagedChannel channel8 = ManagedChannelBuilder.forAddress("35.227.118.129", 9090).usePlaintext().build();
+		ManagedChannel channel8 = ManagedChannelBuilder.forAddress("34.138.47.44", 9090).usePlaintext().build();
 		MatrixServiceGrpc.MatrixServiceBlockingStub stub8 = MatrixServiceGrpc.newBlockingStub(channel8);
 	
 	
