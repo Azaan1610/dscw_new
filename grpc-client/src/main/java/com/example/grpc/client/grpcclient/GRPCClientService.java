@@ -506,9 +506,7 @@ public class GRPCClientService {
 			}// end of i loop
 		}
 
-		else{
-			return "unexpected error!";
-		}
+		
 
 		for (int i = 0; i < A.length; i++) {
 			for (int j = 0; j < A[0].length; j++) {
@@ -518,13 +516,7 @@ public class GRPCClientService {
 		}
 
 		
-		String strData = "Final Matrix Result: " + Arrays.deepToString(C) + ", ";
-			
-		strData += "Required number of servers: " + RequiredNUMServer + " and ";
-			
-		strData += "Calls per server: " + callsPerServer;
-			
-		return strData;
+		
 		channel1.shutdown();
 		channel2.shutdown();
 		channel3.shutdown();
