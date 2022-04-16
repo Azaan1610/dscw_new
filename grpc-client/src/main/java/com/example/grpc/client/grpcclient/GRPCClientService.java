@@ -105,7 +105,6 @@ public class GRPCClientService {
 		}
 
 		//if all checks are successful then upload the file 
-		matrixCalc(matrixA, matrixB, deadline);
 
 		return new uploadController(nameOfFile, fileContentType, "All checks passed, File Uploaded");
 		
@@ -153,7 +152,7 @@ public class GRPCClientService {
 
 	}
 
-	public void matrixCalc(int[][]matrixA, int[][]matrixB, int deadline){//use deadline when doing that part
+	public void matrixCalc(int[][]matrixA, int[][]matrixB, int deadline){
 
 		
 		ManagedChannel channel1 = ManagedChannelBuilder.forAddress("localhost", 9090).usePlaintext().build();
@@ -184,328 +183,73 @@ public class GRPCClientService {
 	
 		int A[][] = matrixA;
 		int B[][] = matrixB;
-		int MAX = matrixA.length; //just get matrixA row length. do not need to get matrixB length as we already know that both sizes are same.
+
+		//just get matrixA row length. do not need to get matrixB length as we already know that both sizes are same.
+		int MAX = matrixA.length;
 		
 		//here we create a new matrix called C
 		int C[][] = new int[MAX][MAX];
 		
-		//deadline footprinting 
-		long startTime = System.nanoTime();
-		MatrixReply deadline_footprinting_matrix = stub1.multiplyBlock(MatrixRequest.newBuilder().setA(A[0][0]).setB(B[MAX-1][MAX-1]).build());
-		long endTime = System.nanoTime();
-		long footprint= endTime-startTime;
-
-		
-		
-		//calculating number of multiply block calls we need
-		int numBlockCalls = 0;
+		//deadline scaling for 8 servers
+		int count = 0;
 		for(int i=0;i<MAX;i++){
 			for(int j=0;j<MAX;j++){
+				C[i][j]=0;
 				for(int k=0;k<MAX;k++){
-					numBlockCalls++;
+					
+					
+					if(count == 1)){//server 1
+						MatrixReply matrix_mult = stub1.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
+						MatrixReply matrix_add = stub1.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(matrix_mult.getC()).build());
+						C[i][j]= MatrixReply.getC();
+
+					}
+					else if(count == 2){//server 2
+						MatrixReply matrix_mult = stub2.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
+						MatrixReply matrix_add = stub2.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(matrix_mult.getC()).build());
+						C[i][j]= MatrixReply.getC();
+					}
+					else if(count == 3){//server 3
+						MatrixReply matrix_mult = stub3.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
+						MatrixReply matrix_add = stub3.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(matrix_mult.getC()).build());
+						C[i][j]= MatrixReply.getC();
+					}
+					else if(count == 4){//server 4
+						MatrixReply = stub4.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
+						MatrixReply = stub4.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(MatrixReply.getC()).build());
+						C[i][j]= MatrixReply.getC();
+					}
+					else if(count == 5){//server 5
+						MatrixReply = stub5.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
+						MatrixReply = stub5.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(MatrixReply.getC()).build());
+						C[i][j]= MatrixReply.getC();
+					}
+					else if(count == 6){//server 6
+						MatrixReply = stub6.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
+						MatrixReply = stub6.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(MatrixReply.getC()).build());
+						C[i][j]= MatrixReply.getC();
+					}
+					else if(count == 7){//server 7
+						MatrixReply = stub7.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
+						MatrixReply = stub7.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(MatrixReply.getC()).build());
+						C[i][j]= MatrixReply.getC();
+					}
+					else{//server 8
+						MatrixReply = stub8.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
+						MatrixReply = stub8.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(MatrixReply.getC()).build());
+						C[i][j]= MatrixReply.getC();
+					}
+					count++;
+					
 					}
 			}
 		}
+	
 
 
-		int RequiredNUMServer = 1+(int)(Math.round((footprint*numBlockCalls)/(deadline*1_000_000_000.0))); //minimum server would always be 1
-		int callsPerServer = numBlockCalls/RequiredNUMServer; //real-time call is the total number of iterations performed via for-loop;
 
-		int currentCallNum = 0;
-			
-		//scaling based on required number of servers:
 		
-		if(RequiredNUMServer==1){//if required number of server equals to 1
-			for(int i=0;i<MAX;i++){
-				for(int j=0;j<MAX;j++){
-					C[i][j]=0;
-					for(int k=0;k<MAX;k++){
-						MatrixReply multiplyAB = stub1.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-						MatrixReply addAB = stub1.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multiplyAB.getC()).build());
-						C[i][j]= addAB.getC();
-					}//end of k loop
-				}//end of j loop
-			}// end of i loop
-		}
-
-
-
-		else if(RequiredNUMServer==2){//if required number of server equals to 2
-			for(int i=0;i<MAX;i++){
-				for(int j=0;j<MAX;j++){
-					C[i][j]=0;
-					for(int k=0;k<MAX;k++){
-						//calling block function 
-						MatrixReply multiplyAB;
-						MatrixReply addAB;
-						if(currentCallNum<=(callsPerServer*1)){//server 1
-							multiplyAB = stub1.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-							addAB = stub1.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multiplyAB.getC()).build());
-							C[i][j]= addAB.getC();
-
-						}
-						else if((currentCallNum>(callsPerServer*1)) && (currentCallNum<=(callsPerServer*2))){//server 2
-							multiplyAB = stub2.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-							addAB = stub2.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multiplyAB.getC()).build());
-							C[i][j]= addAB.getC();
-						}
-						currentCallNum++;
-					}//end of k loop
-				}//end of j loop
-			}// end of i loop
-		}
-
-		else if(RequiredNUMServer==3){
-			for(int i=0;i<MAX;i++){
-				for(int j=0;j<MAX;j++){
-					C[i][j]=0;
-					for(int k=0;k<MAX;k++){
-						//calling block function 
-						MatrixReply multiplyAB;
-						MatrixReply addAB;
-						if(currentCallNum<=(callsPerServer*1)){//server 1
-							multiplyAB = stub1.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-							addAB = stub1.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multiplyAB.getC()).build());
-							C[i][j]= addAB.getC();
-
-						}
-						else if((currentCallNum>(callsPerServer*1)) && (currentCallNum<=(callsPerServer*2))){//server 2
-							multiplyAB = stub2.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-							addAB = stub2.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multiplyAB.getC()).build());
-							C[i][j]= addAB.getC();
-						}
-						else if((currentCallNum>(callsPerServer*2)) && (currentCallNum<=(callsPerServer*3))){//server 3
-							multiplyAB = stub3.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-							addAB = stub3.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multiplyAB.getC()).build());
-							C[i][j]= addAB.getC();
-						}
-						currentCallNum++;
-					}//end of k loop
-				}//end of j loop
-			}// end of i loop
-		}
-		else if(RequiredNUMServer==4){
-			for(int i=0;i<MAX;i++){
-				for(int j=0;j<MAX;j++){
-					C[i][j]=0;
-					for(int k=0;k<MAX;k++){
-						//calling block function 
-						MatrixReply multiplyAB;
-						MatrixReply addAB;
-						if(currentCallNum<=(callsPerServer*1)){//server 1
-							multiplyAB = stub1.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-							addAB = stub1.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multiplyAB.getC()).build());
-							C[i][j]= addAB.getC();
-
-						}
-						else if((currentCallNum>(callsPerServer*1)) && (currentCallNum<=(callsPerServer*2))){//server 2
-							multiplyAB = stub2.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-							addAB = stub2.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multiplyAB.getC()).build());
-							C[i][j]= addAB.getC();
-						}
-						else if((currentCallNum>(callsPerServer*2)) && (currentCallNum<=(callsPerServer*3))){//server 3
-							multiplyAB = stub3.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-							addAB = stub3.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multiplyAB.getC()).build());
-							C[i][j]= addAB.getC();
-						}
-						else if((currentCallNum>(callsPerServer*3)) && (currentCallNum<=(callsPerServer*4))){//server 4
-							multiplyAB = stub4.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-							addAB = stub4.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multiplyAB.getC()).build());
-							C[i][j]= addAB.getC();
-						}
-						currentCallNum++;
-					}//end of k loop
-				}//end of j loop
-			}// end of i loop
-		}
-		else if(RequiredNUMServer==5){
-			for(int i=0;i<MAX;i++){
-				for(int j=0;j<MAX;j++){
-					C[i][j]=0;
-					for(int k=0;k<MAX;k++){
-						//calling block function 
-						MatrixReply multiplyAB;
-						MatrixReply addAB;
-						if(currentCallNum<=(callsPerServer*1)){//server 1
-							multiplyAB = stub1.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-							addAB = stub1.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multiplyAB.getC()).build());
-							C[i][j]= addAB.getC();
-
-						}
-						else if((currentCallNum>(callsPerServer*1)) && (currentCallNum<=(callsPerServer*2))){//server 2
-							multiplyAB = stub2.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-							addAB = stub2.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multiplyAB.getC()).build());
-							C[i][j]= addAB.getC();
-						}
-						else if((currentCallNum>(callsPerServer*2)) && (currentCallNum<=(callsPerServer*3))){//server 3
-							multiplyAB = stub3.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-							addAB = stub3.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multiplyAB.getC()).build());
-							C[i][j]= addAB.getC();
-						}
-						else if((currentCallNum>(callsPerServer*3)) && (currentCallNum<=(callsPerServer*4))){//server 4
-							multiplyAB = stub4.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-							addAB = stub4.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multiplyAB.getC()).build());
-							C[i][j]= addAB.getC();
-						}
-						else if((currentCallNum>(callsPerServer*4)) && (currentCallNum<=(callsPerServer*5))){//server 5
-							multiplyAB = stub5.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-							addAB = stub5.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multiplyAB.getC()).build());
-							C[i][j]= addAB.getC();
-						}
-						currentCallNum++;
-					}//end of k loop
-				}//end of j loop
-			}// end of i loop
-			
-		}
-		else if(RequiredNUMServer==6){
-			for(int i=0;i<MAX;i++){
-				for(int j=0;j<MAX;j++){
-					C[i][j]=0;
-					for(int k=0;k<MAX;k++){
-						//calling block function 
-						MatrixReply multiplyAB;
-						MatrixReply addAB;
-						if(currentCallNum<=(callsPerServer*1)){//server 1
-							multiplyAB = stub1.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-							addAB = stub1.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multiplyAB.getC()).build());
-							C[i][j]= addAB.getC();
-
-						}
-						else if((currentCallNum>(callsPerServer*1)) && (currentCallNum<=(callsPerServer*2))){//server 2
-							multiplyAB = stub2.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-							addAB = stub2.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multiplyAB.getC()).build());
-							C[i][j]= addAB.getC();
-						}
-						else if((currentCallNum>(callsPerServer*2)) && (currentCallNum<=(callsPerServer*3))){//server 3
-							multiplyAB = stub3.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-							addAB = stub3.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multiplyAB.getC()).build());
-							C[i][j]= addAB.getC();
-						}
-						else if((currentCallNum>(callsPerServer*3)) && (currentCallNum<=(callsPerServer*4))){//server 4
-							multiplyAB = stub4.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-							addAB = stub4.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multiplyAB.getC()).build());
-							C[i][j]= addAB.getC();
-						}
-						else if((currentCallNum>(callsPerServer*4)) && (currentCallNum<=(callsPerServer*5))){//server 5
-							multiplyAB = stub5.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-							addAB = stub5.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multiplyAB.getC()).build());
-							C[i][j]= addAB.getC();
-						}
-						else if((currentCallNum>(callsPerServer*5)) && (currentCallNum<=(callsPerServer*6))){//server 6
-							multiplyAB = stub6.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-							addAB = stub6.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multiplyAB.getC()).build());
-							C[i][j]= addAB.getC();
-						}
-						currentCallNum++;
-					}//end of k loop
-				}//end of j loop
-			}// end of i loop
-		}
-		else if(RequiredNUMServer==7){
-			for(int i=0;i<MAX;i++){
-				for(int j=0;j<MAX;j++){
-					C[i][j]=0;
-					for(int k=0;k<MAX;k++){
-						//calling block function 
-						MatrixReply multiplyAB;
-						MatrixReply addAB;
-						if(currentCallNum<=(callsPerServer*1)){//server 1
-							multiplyAB = stub1.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-							addAB = stub1.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multiplyAB.getC()).build());
-							C[i][j]= addAB.getC();
-
-						}
-						else if((currentCallNum>(callsPerServer*1)) && (currentCallNum<=(callsPerServer*2))){//server 2
-							multiplyAB = stub2.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-							addAB = stub2.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multiplyAB.getC()).build());
-							C[i][j]= addAB.getC();
-						}
-						else if((currentCallNum>(callsPerServer*2)) && (currentCallNum<=(callsPerServer*3))){//server 3
-							multiplyAB = stub3.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-							addAB = stub3.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multiplyAB.getC()).build());
-							C[i][j]= addAB.getC();
-						}
-						else if((currentCallNum>(callsPerServer*3)) && (currentCallNum<=(callsPerServer*4))){//server 4
-							multiplyAB = stub4.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-							addAB = stub4.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multiplyAB.getC()).build());
-							C[i][j]= addAB.getC();
-						}
-						else if((currentCallNum>(callsPerServer*4)) && (currentCallNum<=(callsPerServer*5))){//server 5
-							multiplyAB = stub5.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-							addAB = stub5.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multiplyAB.getC()).build());
-							C[i][j]= addAB.getC();
-						}
-						else if((currentCallNum>(callsPerServer*5)) && (currentCallNum<=(callsPerServer*6))){//server 6
-							multiplyAB = stub6.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-							addAB = stub6.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multiplyAB.getC()).build());
-							C[i][j]= addAB.getC();
-						}
-						else if((currentCallNum>(callsPerServer*6)) && (currentCallNum<=(callsPerServer*7))){//server 7
-							multiplyAB = stub7.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-							addAB = stub7.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multiplyAB.getC()).build());
-							C[i][j]= addAB.getC();
-						}
-						currentCallNum++;
-					}//end of k loop
-				}//end of j loop
-			}// end of i loop
-		}
-		else if(RequiredNUMServer>=8){//multiplication on server with scaling if the required number of servers is greater than 8 for better load balancing
-			for(int i=0;i<MAX;i++){
-				for(int j=0;j<MAX;j++){
-					C[i][j]=0;
-					for(int k=0;k<MAX;k++){
-						//calling block function 
-						MatrixReply multiplyAB;
-						MatrixReply addAB;
-						if(currentCallNum<=(callsPerServer*1)){//server 1
-							multiplyAB = stub1.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-							addAB = stub1.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multiplyAB.getC()).build());
-							C[i][j]= addAB.getC();
-
-						}
-						else if((currentCallNum>(callsPerServer*1)) && (currentCallNum<=(callsPerServer*2))){//server 2
-							multiplyAB = stub2.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-							addAB = stub2.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multiplyAB.getC()).build());
-							C[i][j]= addAB.getC();
-						}
-						else if((currentCallNum>(callsPerServer*2)) && (currentCallNum<=(callsPerServer*3))){//server 3
-							multiplyAB = stub3.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-							addAB = stub3.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multiplyAB.getC()).build());
-							C[i][j]= addAB.getC();
-						}
-						else if((currentCallNum>(callsPerServer*3)) && (currentCallNum<=(callsPerServer*4))){//server 4
-							multiplyAB = stub4.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-							addAB = stub4.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multiplyAB.getC()).build());
-							C[i][j]= addAB.getC();
-						}
-						else if((currentCallNum>(callsPerServer*4)) && (currentCallNum<=(callsPerServer*5))){//server 5
-							multiplyAB = stub5.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-							addAB = stub5.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multiplyAB.getC()).build());
-							C[i][j]= addAB.getC();
-						}
-						else if((currentCallNum>(callsPerServer*5)) && (currentCallNum<=(callsPerServer*6))){//server 6
-							multiplyAB = stub6.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-							addAB = stub6.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multiplyAB.getC()).build());
-							C[i][j]= addAB.getC();
-						}
-						else if((currentCallNum>(callsPerServer*6)) && (currentCallNum<=(callsPerServer*7))){//server 7
-							multiplyAB = stub7.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-							addAB = stub7.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multiplyAB.getC()).build());
-							C[i][j]= addAB.getC();
-						}
-						else{//server 8
-							multiplyAB = stub8.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-							addAB = stub8.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multiplyAB.getC()).build());
-							C[i][j]= addAB.getC();
-						}
-						currentCallNum++;
-						
-						}//end of k loop
-				}//end of j loop
-			}// end of i loop
-		}
+		
 
 		
 
@@ -516,7 +260,7 @@ public class GRPCClientService {
 			System.out.println("");
 		}
 
-		System.out.println(RequiredNUMServer);
+		
 
 		
 		
