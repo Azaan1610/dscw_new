@@ -182,17 +182,18 @@ public class GRPCClientService {
 	
 		int A[][] = matrixA;
 		int B[][] = matrixB;
+		int MAX = matrixA.length; //just get matrixA row length. do not need to get matrixB length as we already know that both sizes are same.
+		//here we create a new matrix called matrixC
+		int C[][] = new int[MAX][MAX];
 		//deadline footprinting 
 		long startTime = System.nanoTime();
-		MatrixReply deadline_footprinting_matrix = stub1.multiplyBlock(MatrixRequest.newBuilder().setA(A).setB(B).build());
+		MatrixReply deadline_footprinting_matrix = stub1.multiplyBlock(MatrixRequest.newBuilder().setA(A[0][0]).setB(B[MAX-1][MAX-1]).build());
 		long endTime = System.nanoTime();
 		long footprint= endTime-startTime;
 
 		
 		
-		int MAX = matrixA.length; //just get matrixA row length. do not need to get matrixB length as we already know that both sizes are same.
-		//here we create a new matrix called matrixC
-		int C[][] = new int[MAX][MAX];
+		
 		
 /////////////////////////////////////////////////////////
 
