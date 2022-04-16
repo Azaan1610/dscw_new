@@ -204,43 +204,43 @@ public class GRPCClientService {
 					if(count == 1){//server 1
 						MatrixReply matrix_mult = stub1.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
 						MatrixReply matrix_add = stub1.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(matrix_mult.getC()).build());
-						C[i][j]= MatrixReply.getC();
+						C[i][j]= matrix_add.getC();
 
 					}
 					else if(count == 2){//server 2
 						MatrixReply matrix_mult = stub2.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
 						MatrixReply matrix_add = stub2.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(matrix_mult.getC()).build());
-						C[i][j]= MatrixReply.getC();
+						C[i][j]= matrix_add.getC();
 					}
 					else if(count == 3){//server 3
 						MatrixReply matrix_mult = stub3.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
 						MatrixReply matrix_add = stub3.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(matrix_mult.getC()).build());
-						C[i][j]= MatrixReply.getC();
+						C[i][j]= matrix_add.getC();
 					}
 					else if(count == 4){//server 4
 						MatrixReply matrix_mult = stub4.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
 						MatrixReply matrix_add = stub4.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(MatrixReply.getC()).build());
-						C[i][j]= MatrixReply.getC();
+						C[i][j]= matrix_add.getC();
 					}
 					else if(count == 5){//server 5
 						MatrixReply matrix_mult = stub5.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
 						MatrixReply matrix_add = stub5.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(MatrixReply.getC()).build());
-						C[i][j]= MatrixReply.getC();
+						C[i][j]= matrix_add.getC();
 					}
 					else if(count == 6){//server 6
 						MatrixReply matrix_mult = stub6.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
 						MatrixReply matrix_add = stub6.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(MatrixReply.getC()).build());
-						C[i][j]= MatrixReply.getC();
+						C[i][j]= matrix_add.getC();
 					}
 					else if(count == 7){//server 7
 						MatrixReply matrix_mult = stub7.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
 						MatrixReply matrix_add = stub7.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(MatrixReply.getC()).build());
-						C[i][j]= MatrixReply.getC();
+						C[i][j]= matrix_add.getC();
 					}
 					else{//server 8
 						MatrixReply matrix_mult = stub8.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
 						MatrixReply matrix_add = stub8.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(MatrixReply.getC()).build());
-						C[i][j]= MatrixReply.getC();
+						C[i][j]= matrix_add.getC();
 					}
 					count++;
 					
