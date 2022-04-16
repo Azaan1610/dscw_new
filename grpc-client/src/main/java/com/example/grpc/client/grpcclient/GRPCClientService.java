@@ -105,6 +105,8 @@ public class GRPCClientService {
 		}
 
 		//if all checks are successful then upload the file 
+		matrixCalc(matrixA, matrixB, deadline);
+
 		return new uploadController(nameOfFile, fileContentType, "All checks passed, File Uploaded");
 		
 
