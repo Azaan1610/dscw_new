@@ -143,7 +143,7 @@ public class GRPCClientService {
         double matrixB_powerCheck = (Math.log(matrixB_row1)/Math.log(2));
 
 		//if it returns an even number then we know that the matrix is a power of 2
-		if (matrixA_powerCheck%2 ==0 && matrixB_powerCheck%2==0){ //checking if returned value is even or not
+		if (matrixA_powerCheck%2==0 && matrixB_powerCheck%2==0){ //checking if returned value is even or not
 			reply = "power of 2 :)";
 		}
 		else{
@@ -185,8 +185,10 @@ public class GRPCClientService {
 		int A[][] = matrixA;
 		int B[][] = matrixB;
 		int MAX = matrixA.length; //just get matrixA row length. do not need to get matrixB length as we already know that both sizes are same.
-		//here we create a new matrix called matrixC
+		
+		//here we create a new matrix called C
 		int C[][] = new int[MAX][MAX];
+		
 		//deadline footprinting 
 		long startTime = System.nanoTime();
 		MatrixReply deadline_footprinting_matrix = stub1.multiplyBlock(MatrixRequest.newBuilder().setA(A[0][0]).setB(B[MAX-1][MAX-1]).build());
@@ -195,23 +197,19 @@ public class GRPCClientService {
 
 		
 		
-		
-		
-/////////////////////////////////////////////////////////
-
-		int totalCalls = 0;
-		//calling multiplication block function
+		//calculating number of multiply block calls we need
+		int numBlockCalls = 0;
 		for(int i=0;i<MAX;i++){
 			for(int j=0;j<MAX;j++){
 				for(int k=0;k<MAX;k++){
-					totalCalls++;
-					}//end of k loop
-			}//end of j loop
-		}// end of i loop
+					numBlockCalls++;
+					}
+			}
+		}
 
 
-		int RequiredNUMServer = 1+(int)(Math.round((footprint*totalCalls)/(deadline*1_000_000_000.0))); //minimum server would always be 1
-		int callsPerServer = totalCalls/RequiredNUMServer; //real-time call is the total number of iterations performed via for-loop;
+		int RequiredNUMServer = 1+(int)(Math.round((footprint*numBlockCalls)/(deadline*1_000_000_000.0))); //minimum server would always be 1
+		int callsPerServer = numBlockCalls/RequiredNUMServer; //real-time call is the total number of iterations performed via for-loop;
 
 		int currentCallNum = 0;
 			
@@ -517,6 +515,8 @@ public class GRPCClientService {
 			}
 			System.out.println("");
 		}
+
+		System.out.println(RequiredNUMServer);
 
 		
 		
