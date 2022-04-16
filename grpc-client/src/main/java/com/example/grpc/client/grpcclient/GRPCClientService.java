@@ -194,7 +194,7 @@ public class GRPCClientService {
 		int C[][] = new int[MAX][MAX];
 		
 		//deadline scaling for 8 servers
-		int count = 0;
+		int count = 1;
 		for(int i=0;i<MAX;i++){
 			for(int j=0;j<MAX;j++){
 				C[i][j]=0;
