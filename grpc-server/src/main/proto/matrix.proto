@@ -26,16 +26,17 @@ service MatrixService{
   rpc AddBlock (MatrixRequest) returns (MatrixReply) {}
 }
 
+// The request message containing the two matricies
 message MatrixRequest {
-  
+
   int32 A = 1;
-	int32 B = 2;
+  int32 B = 2;
 }
 
 // The response message containing the result marix
 message MatrixReply {
-  	int32 C = 1;
 
+  int32 C = 1;
 }
 
 
