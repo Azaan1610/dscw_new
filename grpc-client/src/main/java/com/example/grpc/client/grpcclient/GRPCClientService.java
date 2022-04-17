@@ -204,7 +204,7 @@ public class GRPCClientService {
 		int C[][] = new int[MAX][MAX];
 		
 		//deadline scaling for 8 servers
-		counter = 0;
+		int counter = 0;
 
 		//iterate through all 8 servers and carry out the matrix multiplication
 		for (int i = 0; i < MAX; i++) { 
