@@ -216,7 +216,7 @@ public class GRPCClientService {
 					//if the counter reaches the END of the array we reset the counter to 0 and the first server comes back in play
 					//8 is there as we are using all 8 servers
 					if((counter % 8)==0){
-						counter = 0
+						counter = 0;
 					}
 					//if we have not reached the end of the array, then keep sending load to other servers
 					else{
@@ -225,7 +225,7 @@ public class GRPCClientService {
 					MatrixReply addMatrix=stubsInArray[counter].addBlock(MatrixRequest.newBuilder().setA(c[i][j]).setB(multMatrix.getC()).build());
 					c[i][j] = addMatrix.getC();
 					if((counter % 8)==0){
-						counter = 0
+						counter = 0;
 					}
 					else{
 						counter++;
