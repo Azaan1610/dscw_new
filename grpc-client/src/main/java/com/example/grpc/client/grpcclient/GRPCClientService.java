@@ -222,8 +222,8 @@ public class GRPCClientService {
 					else{
 						counter++;
 					} 
-					MatrixReply addMatrix=stubsInArray[counter].addBlock(MatrixRequest.newBuilder().setA(c[i][j]).setB(multMatrix.getC()).build());
-					c[i][j] = addMatrix.getC();
+					MatrixReply addMatrix=stubsInArray[counter].addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multMatrix.getC()).build());
+					C[i][j] = addMatrix.getC();
 					if((counter % 8)==0){
 						counter = 0;
 					}
