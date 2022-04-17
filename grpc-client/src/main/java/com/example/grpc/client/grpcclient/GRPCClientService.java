@@ -249,7 +249,6 @@ public class GRPCClientService {
 			System.out.println("");
 		}
 
-		System.out.println(count);
 
 		
 
