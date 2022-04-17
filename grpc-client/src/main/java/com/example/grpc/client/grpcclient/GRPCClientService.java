@@ -53,17 +53,15 @@ public class GRPCClientService {
 		File fileDestination = new File(MatrixFilePath + '/' + nameOfFile);
 
 		if (!fileDestination.getParentFile().exists())  fileDestination.getParentFile().mkdirs(); 
-                    
-        
                 try { file.transferTo(fileDestination); }
                 catch (Exception e) { return new uploadController(nameOfFile, fileContentType, "add a file please " + e.getMessage()); }
 			
 		
-				// this is where the functionality goes for reading in the file and then converting it into a 2d int[][] matrix
+		// this is where the functionality goes for reading in the file and then converting it into a 2d int[][] matrix
 		BufferedReader reader;
 		reader = new BufferedReader(new FileReader(fileDestination));
+		
 		//read in the file from the destination above
-
 		String firstDimension = reader.readLine();
 		String[] split = firstDimension.split(" ");
 		int firstX = Integer.parseInt(split[0]); // get the row
@@ -162,19 +160,19 @@ public class GRPCClientService {
 		MatrixServiceGrpc.MatrixServiceBlockingStub stub1 = MatrixServiceGrpc.newBlockingStub(channel1);
 		
 		//these are the 8 different servers with their respective stubs
-		ManagedChannel channel2 = ManagedChannelBuilder.forAddress("35.184.57.72", 9090).usePlaintext().build();
+		ManagedChannel channel2 = ManagedChannelBuilder.forAddress("34.122.157.149", 9090).usePlaintext().build();
 		MatrixServiceGrpc.MatrixServiceBlockingStub stub2 = MatrixServiceGrpc.newBlockingStub(channel2);
 		
-		ManagedChannel channel3 = ManagedChannelBuilder.forAddress("34.69.17.47", 9090).usePlaintext().build();
+		ManagedChannel channel3 = ManagedChannelBuilder.forAddress("35.222.222.179", 9090).usePlaintext().build();
 		MatrixServiceGrpc.MatrixServiceBlockingStub stub3 = MatrixServiceGrpc.newBlockingStub(channel3);
 		
-		ManagedChannel channel4 = ManagedChannelBuilder.forAddress("34.123.234.31", 9090).usePlaintext().build();
+		ManagedChannel channel4 = ManagedChannelBuilder.forAddress("34.122.124.15", 9090).usePlaintext().build();
 		MatrixServiceGrpc.MatrixServiceBlockingStub stub4 = MatrixServiceGrpc.newBlockingStub(channel4);
 		
-		ManagedChannel channel5 = ManagedChannelBuilder.forAddress("35.196.134.18", 9090).usePlaintext().build();
+		ManagedChannel channel5 = ManagedChannelBuilder.forAddress("34.73.184.141", 9090).usePlaintext().build();
 		MatrixServiceGrpc.MatrixServiceBlockingStub stub5 = MatrixServiceGrpc.newBlockingStub(channel5);
 		
-		ManagedChannel channel6 = ManagedChannelBuilder.forAddress("34.73.184.141", 9090).usePlaintext().build();
+		ManagedChannel channel6 = ManagedChannelBuilder.forAddress("35.196.134.18", 9090).usePlaintext().build();
 		MatrixServiceGrpc.MatrixServiceBlockingStub stub6 = MatrixServiceGrpc.newBlockingStub(channel6);
 		
 		ManagedChannel channel7 = ManagedChannelBuilder.forAddress("35.227.118.129", 9090).usePlaintext().build();
@@ -182,8 +180,20 @@ public class GRPCClientService {
 		
 		ManagedChannel channel8 = ManagedChannelBuilder.forAddress("34.138.47.44", 9090).usePlaintext().build();
 		MatrixServiceGrpc.MatrixServiceBlockingStub stub8 = MatrixServiceGrpc.newBlockingStub(channel8);
+
+		//adding all the stubs into an array so that we can iterate through them later on for scaling
+		MatrixServiceGrpc.MatrixServiceBlockingStub [] stubsInArray = new MatrixServiceGrpc.MatrixServiceBlockingStub[8];
+		stubsInArray[0] = stub1;
+		stubsInArray[1] = stub2;
+		stubsInArray[2] = stub3;
+		stubsInArray[3] = stub4;
+		stubsInArray[4] = stub5;
+		stubsInArray[5] = stub6;
+		stubsInArray[6] = stub7;
+		stubsInArray[7] = stub8;
+		
 	
-	
+		//putting Arrays into 
 		int A[][] = matrixA;
 		int B[][] = matrixB;
 
@@ -194,57 +204,33 @@ public class GRPCClientService {
 		int C[][] = new int[MAX][MAX];
 		
 		//deadline scaling for 8 servers
-		int count = 1;
-		for(int i=0;i<MAX;i++){
-			for(int j=0;j<MAX;j++){
-				C[i][j]=0;
-				for(int k=0;k<MAX;k++){
-					
-					
-					if(count == 1){//server 1
-						MatrixReply matrix_mult = stub1.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-						MatrixReply matrix_add = stub1.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(matrix_mult.getC()).build());
-						C[i][j]= matrix_add.getC();
+		counter = 0;
 
-					}
-					else if(count == 2){//server 2
-						MatrixReply matrix_mult = stub2.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-						MatrixReply matrix_add = stub2.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(matrix_mult.getC()).build());
-						C[i][j]= matrix_add.getC();
-					}
-					else if(count == 3){//server 3
-						MatrixReply matrix_mult = stub3.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-						MatrixReply matrix_add = stub3.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(matrix_mult.getC()).build());
-						C[i][j]= matrix_add.getC();
-					}
-					else if(count == 4){//server 4
-						MatrixReply matrix_mult = stub4.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-						MatrixReply matrix_add = stub4.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(matrix_mult.getC()).build());
-						C[i][j]= matrix_add.getC();
-					}
-					else if(count == 5){//server 5
-						MatrixReply matrix_mult = stub5.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-						MatrixReply matrix_add = stub5.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(matrix_mult.getC()).build());
-						C[i][j]= matrix_add.getC();
-					}
-					else if(count == 6){//server 6
-						MatrixReply matrix_mult = stub6.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-						MatrixReply matrix_add = stub6.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(matrix_mult.getC()).build());
-						C[i][j]= matrix_add.getC();
-					}
-					else if(count == 7){//server 7
-						MatrixReply matrix_mult = stub7.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-						MatrixReply matrix_add = stub7.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(matrix_mult.getC()).build());
-						C[i][j]= matrix_add.getC();
-					}
-					else{//server 8
-						MatrixReply matrix_mult = stub8.multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-						MatrixReply matrix_add = stub8.addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(matrix_mult.getC()).build());
-						C[i][j]= matrix_add.getC();
-					}
-					count++;
+		//iterate through all 8 servers and carry out the matrix multiplication
+		for (int i = 0; i < MAX; i++) { 
+			for (int j = 0; j < MAX; j++) { 
+				for (int k = 0; k < MAX; k++) {
+
 					
+					MatrixReply multMatrix =stubsInArray[counter].multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
+					//if the counter reaches the END of the array we reset the counter to 0 and the first server comes back in play
+					//8 is there as we are using all 8 servers
+					if((counter % 8)==0){
+						counter = 0
 					}
+					//if we have not reached the end of the array, then keep sending load to other servers
+					else{
+						counter++;
+					} 
+					MatrixReply addMatrix=stubsInArray[counter].addBlock(MatrixRequest.newBuilder().setA(c[i][j]).setB(multMatrix.getC()).build());
+					c[i][j] = addMatrix.getC();
+					if((counter % 8)==0){
+						counter = 0
+					}
+					else{
+						counter++;
+					} 
+				}
 			}
 		}
 	
