@@ -215,7 +215,8 @@ public class GRPCClientService {
 					MatrixReply multMatrix =stubsInArray[counter].multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
 					//if the counter reaches the END of the array we reset the counter to 0 and the first server comes back in play
 					//8 is there as we are using all 8 servers
-					if((counter % 8)==0){
+					
+					if(counter ==7){
 						counter = 0;
 					}
 					//if we have not reached the end of the array, then keep sending load to other servers
@@ -224,7 +225,7 @@ public class GRPCClientService {
 					} 
 					MatrixReply addMatrix=stubsInArray[counter].addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multMatrix.getC()).build());
 					C[i][j] = addMatrix.getC();
-					if((counter % 8)==0){
+					if(counter ==7){
 						counter = 0;
 					}
 					else{
@@ -240,8 +241,8 @@ public class GRPCClientService {
 		
 		
 
-		
 
+		// here we print out the matrix on the GRPC REST CLIENT
 		for (int i = 0; i < A.length; i++) {
 			for (int j = 0; j < A[0].length; j++) {
 				System.out.print(C[i][j] + " ");
