@@ -156,11 +156,11 @@ public class GRPCClientService {
 	public void matrixCalc(int[][]matrixA, int[][]matrixB, int deadline){
 
 		
-		ManagedChannel channel1 = ManagedChannelBuilder.forAddress("localhost", 9090).usePlaintext().build();
+		ManagedChannel channel1 = ManagedChannelBuilder.forAddress("10.128.0.29", 9090).usePlaintext().build();
 		MatrixServiceGrpc.MatrixServiceBlockingStub stub1 = MatrixServiceGrpc.newBlockingStub(channel1);
 		
 		//these are the 8 different servers with their respective stubs
-		ManagedChannel channel2 = ManagedChannelBuilder.forAddress("34.122.157.149", 9090).usePlaintext().build();
+		ManagedChannel channel2 = ManagedChannelBuilder.forAddress("10.128.0.26", 9090).usePlaintext().build();
 		MatrixServiceGrpc.MatrixServiceBlockingStub stub2 = MatrixServiceGrpc.newBlockingStub(channel2);
 		
 		ManagedChannel channel3 = ManagedChannelBuilder.forAddress("35.222.222.179", 9090).usePlaintext().build();
