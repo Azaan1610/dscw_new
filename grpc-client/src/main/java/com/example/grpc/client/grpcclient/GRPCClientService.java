@@ -66,7 +66,7 @@ public class GRPCClientService {
 		String firstDimension = reader.readLine();
 		String[] split = firstDimension.split(" ");
 		int firstX = Integer.parseInt(split[0]); // get the row
-		int firstY = Integer.parseInt(split[0]);// get the column
+		int firstY = Integer.parseInt(split[1]);// get the column
 		int[][] first = new int[firstX][firstY]; // make a new 2d int array called first 
 
 		for (int i = 0; i < firstX; i++) { //here we iterate through the FIRST matrix in the file and convert it to a 2d int[][] matrix array
@@ -81,7 +81,7 @@ public class GRPCClientService {
 		String secondDimension = reader.readLine();
 		String[] split2 = secondDimension.split(" ");
 		int secX = Integer.parseInt(split2[0]);
-		int secY = Integer.parseInt(split2[0]);
+		int secY = Integer.parseInt(split2[1]);
 		int[][] second = new int[secX][secY];
 
 		for (int i = 0; i < secX; i++) {
