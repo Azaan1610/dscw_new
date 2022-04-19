@@ -62,6 +62,7 @@ public class GRPCClientService {
 		reader = new BufferedReader(new FileReader(fileDestination));
 		
 		//read in the file from the destination above
+		//https://stackoverflow.com/questions/55102669/how-to-read-two-matrices-from-a-txt-file-in-java
 		String firstDimension = reader.readLine();
 		String[] split = firstDimension.split(" ");
 		int firstX = Integer.parseInt(split[0]); // get the row
@@ -75,7 +76,7 @@ public class GRPCClientService {
 				}
 		}
 
-		// Read "@" from the matrix file
+		//Read "@" from the matrix file
 		reader.readLine(); //this is in place to differentiate the first matrix from the second and vice versa
 		String secondDimension = reader.readLine();
 		String[] split2 = secondDimension.split(" ");
@@ -114,49 +115,12 @@ public class GRPCClientService {
 
 	}
 
-	//class for validating the size of the matrices (both should be sqaure)
-	public static String sizeCheck(int[][]matrixA, int[][]matrixB){
-		int matrixA_row1 = matrixA.length; // checks the length of the row for matrix a (eg how many elements in the row)
-		int matrixA_col1 = matrixA[0].length; // checks the first column [0] of matrixA (eg how many elements in that col)
-		String reply;
-		int matrixB_row1 = matrixB.length;
-		int matrixB_col1 = matrixB[0].length;
 
-		//here we compare to see if both matrices have same length of row and column by splitting eg matrixB[0] gets us the column in the first row
-		if(matrixA_row1!=matrixB_row1 || matrixA_col1!=matrixB_col1){
-				reply = "Error: Both matrices have to be SQUARE and equal in dimension!";
-		}
-		else{
-				reply = "Equal Size :)";
-		}
-		return reply;
-	}
-
-	public static String powerCheck(int[][]matrixA, int[][]matrixB){
-		int matrixA_row1 = matrixA.length;
-		String reply;
-		int matrixB_row1 = matrixB.length;
-
-
-		//here we are checking if the rows of each matrix return an EVEN number for log base of 2
-		double matrixA_powerCheck = (Math.log(matrixA_row1)/Math.log(2));
-        double matrixB_powerCheck = (Math.log(matrixB_row1)/Math.log(2));
-
-		//if it returns an even number then we know that the matrix is a power of 2
-		if (matrixA_powerCheck%2==0 && matrixB_powerCheck%2==0){ //checking if returned value is even or not
-			reply = "power of 2 :)";
-		}
-		else{
-			reply = "Not power of 2";
-		}
-		return reply;
-
-	}
 
 	public void matrixCalc(int[][]matrixA, int[][]matrixB, int deadline){
 
 		
-		ManagedChannel channel1 = ManagedChannelBuilder.forAddress("10.128.0.29", 9090).usePlaintext().build();
+		ManagedChannel channel1 = ManagedChannelBuilder.forAddress(localhost, 9090).usePlaintext().build();
 		MatrixServiceGrpc.MatrixServiceBlockingStub stub1 = MatrixServiceGrpc.newBlockingStub(channel1);
 		
 		//these are the 8 different servers with their respective stubs
@@ -193,7 +157,7 @@ public class GRPCClientService {
 		stubsInArray[7] = stub8;
 		
 	
-		//putting Arrays into 
+		//creating array variable
 		int A[][] = matrixA;
 		int B[][] = matrixB;
 
@@ -207,30 +171,17 @@ public class GRPCClientService {
 		int counter = 0;
 
 		//iterate through all 8 servers and carry out the matrix multiplication
-		for (int i = 0; i < MAX; i++) { 
-			for (int j = 0; j < MAX; j++) { 
-				for (int k = 0; k < MAX; k++) {
+		for (int i = 0; i < MAX; i++) { //iterating through the row
+			for (int j = 0; j < MAX; j++) {  //iterating through the column
+				for (int k = 0; k < MAX; k++) { //now we iterate through the stubs
 
-					
-					MatrixReply multMatrix =stubsInArray[counter].multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
-					//if the counter reaches the END of the array we reset the counter to 0 and the first server comes back in play
-					//8 is there as we are using all 8 servers
-					
-					if(counter ==7){
-						counter = 0;
-					}
-					//if we have not reached the end of the array, then keep sending load to other servers
-					else{
-						counter++;
-					} 
-					MatrixReply addMatrix=stubsInArray[counter].addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multMatrix.getC()).build());
+					//counter%8 allows us to iterate through the stub array and when it reaches and of array, the counter goes back to 0
+					MatrixReply multMatrix =stubsInArray[counter%8].multiplyBlock(MatrixRequest.newBuilder().setA(A[i][k]).setB(B[k][j]).build());
+					counter++;
+
+					MatrixReply addMatrix=stubsInArray[counter%8].addBlock(MatrixRequest.newBuilder().setA(C[i][j]).setB(multMatrix.getC()).build());
 					C[i][j] = addMatrix.getC();
-					if(counter ==7){
-						counter = 0;
-					}
-					else{
-						counter++;
-					} 
+					counter++; 
 				}
 			}
 		}
@@ -241,7 +192,9 @@ public class GRPCClientService {
 		
 		
 
-
+		//here we print out the deadline chosen
+		System.out.println("Your deadline is"+" "deadline);
+		
 		// here we print out the matrix on the GRPC REST CLIENT
 		for (int i = 0; i < A.length; i++) {
 			for (int j = 0; j < A[0].length; j++) {
@@ -250,8 +203,6 @@ public class GRPCClientService {
 			System.out.println("");
 		}
 
-
-		
 
 		
 		
@@ -270,6 +221,44 @@ public class GRPCClientService {
 	} 
 
 
+		//class for validating the size of the matrices (both should be sqaure)
+		public static String sizeCheck(int[][]matrixA, int[][]matrixB){
+			int matrixA_row1 = matrixA.length; // checks the length of the row for matrix a (eg how many elements in the row)
+			int matrixA_col1 = matrixA[0].length; // checks the first column [0] of matrixA (eg how many elements in that col)
+			String reply;
+			int matrixB_row1 = matrixB.length;
+			int matrixB_col1 = matrixB[0].length;
+	
+			//here we compare to see if both matrices have same length of row and column by splitting eg matrixB[0] gets us the column in the first row
+			if(matrixA_row1!=matrixA_col1 || matrixB_row1!=matrixB_col1){
+					reply = "Error: Both matrices have to be SQUARE and equal in dimension!";
+			}
+			else{
+					reply = "Equal Size :)";
+			}
+			return reply;
+		}
+	
+		public static String powerCheck(int[][]matrixA, int[][]matrixB){
+			int matrixA_row1 = matrixA.length;
+			String reply;
+			int matrixB_row1 = matrixB.length;
+	
+	
+			//here we are checking if the rows of each matrix return an EVEN number for log base of 2
+			double matrixA_powerCheck = (Math.log(matrixA_row1)/Math.log(2));
+			double matrixB_powerCheck = (Math.log(matrixB_row1)/Math.log(2));
+	
+			//if it returns an even number then we know that the matrix is a power of 2
+			if (matrixA_powerCheck==(int)matrixA_powerCheck && matrixB_powerCheck==(int)matrixB_powerCheck){ //checking if returned value is a whole number or not
+				reply = "power of 2 :)";
+			}
+			else{
+				reply = "Not power of 2";
+			}
+			return reply;
+	
+		}
 
 
 
